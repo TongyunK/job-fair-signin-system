@@ -1,0 +1,27 @@
+{
+  "common": {
+    "submit": "提交",
+    "cancel": "取消",
+    "confirm": "确认",
+    "loading": "加载中...",
+    "success": "成功",
+    "error": "错误"
+  },
+  "signin": {
+    "title": "招聘会签到",
+    "name": "姓名",
+    "phone": "手机号",
+    "email": "邮箱",
+    "company": "公司名称",
+    "position": "职位",
+    "submit": "提交签到"
+  },
+  "queue": {
+    "title": "排队取号",
+    "yourNumber": "您的号码",
+    "position": "当前排队位置",
+    "estimatedWait": "预计等待时间",
+    "checkStatus": "查询状态"
+  }
+}
+

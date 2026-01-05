@@ -1,0 +1,97 @@
+{
+  "name": "job-fair-signin/backend",
+  "type": "project",
+  "description": "招聘会签到取号系统后端",
+  "keywords": ["laravel", "framework"],
+  "license": "MIT",
+  "require": {
+    "php": "^8.1",
+    "guzzlehttp/guzzle": "^7.2",
+    "laravel/framework": "^10.10",
+    "laravel/sanctum": "^3.2",
+    "laravel/tinker": "^2.8",
+    "maatwebsite/excel": "^3.1",
+    "twilio/sdk": "^7.0"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.9.1",
+    "laravel/pint": "^1.0",
+    "laravel/sail": "^1.18",
+    "mockery/mockery": "^1.4.4",
+    "nunomaduro/collision": "^7.0",
+    "phpunit/phpunit": "^10.1",
+    "spatie/laravel-ignition": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover --ansi"
+    ],
+    "post-update-cmd": [
+      "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+    ],
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate --ansi"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": []
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "php-http/discovery": true
+    },
+    "audit": {
+      "ignore": [
+        "PKSA-rqc2-tcc6-nc79",
+        "PKSA-64jn-3d9t-gncx",
+        "PKSA-8b16-mcgz-h4cz",
+        "PKSA-s99r-9yxm-hjvt",
+        "PKSA-4ckb-wpj6-c29d",
+        "PKSA-nm34-xhtz-ww9p",
+        "PKSA-7jd6-nb49-bz4v",
+        "PKSA-jw5c-q9nd-tzj9",
+        "PKSA-285y-y5bt-kvd9",
+        "PKSA-ybqb-vyrq-8pdt",
+        "PKSA-bcnb-9tc9-bjb8",
+        "PKSA-dbrb-pvhs-h3st",
+        "PKSA-gst3-cdk3-bpqt",
+        "PKSA-xk3k-rd1m-pxmg",
+        "PKSA-7f9v-sb8k-krfb",
+        "PKSA-p1pj-q951-6f1x",
+        "PKSA-mkg2-1wyw-57y7",
+        "PKSA-dvbq-8ft2-ngrw",
+        "PKSA-m4hk-rk8p-4t5p",
+        "PKSA-xp7t-fbrb-qjv4"
+      ]
+    },
+    "platform": {
+      "php": "8.4.99",
+      "ext-zip": "0"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
+

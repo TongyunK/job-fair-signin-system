@@ -1,0 +1,333 @@
+# 开发指南
+
+本文档详细说明如何在本地进行开发，以及如何部署到生产环境。
+
+## 开发模式选择
+
+### 模式一：完全本地开发（推荐）
+
+**适用场景：** 日常开发、功能实现、调试
+
+**优点：**
+- 开发速度快，热重载响应快
+- 可以直接使用IDE断点调试
+- 不需要Docker，资源占用少
+- 修改代码立即生效
+
+**缺点：**
+- 需要本地安装PHP、MySQL、Redis
+- 环境可能与生产环境有差异
+
+**步骤：**
+
+1. **安装本地环境**
+   ```bash
+   # 确保已安装：
+   # - PHP 8.1+ (包含扩展: pdo_mysql, redis, mbstring, xml, gd)
+   # - Composer
+   # - MySQL 8.0
+   # - Redis 6.0
+   # - Node.js 18+
+   ```
+
+2. **启动MySQL和Redis**
+   ```bash
+   # Windows (使用XAMPP或服务)
+   # Mac/Linux
+   sudo service mysql start
+   sudo service redis-server start
+   # 或
+   brew services start mysql
+   brew services start redis
+   ```
+
+3. **配置后端**
+   ```bash
+   cd backend
+   composer install
+   cp .env.example .env
+   
+   # 编辑 .env，设置本地数据库
+   # DB_HOST=127.0.0.1
+   # DB_DATABASE=job_fair_signin_system
+   # DB_USERNAME=root
+   # DB_PASSWORD=你的密码
+   # REDIS_HOST=127.0.0.1
+   
+   php artisan key:generate
+   
+   # 创建数据库
+   mysql -u root -p
+   CREATE DATABASE job_fair_signin_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   
+   php artisan migrate
+   php artisan serve  # 运行在 http://localhost:8000
+   ```
+
+4. **配置前端**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev  # 运行在 http://localhost:3000
+   ```
+
+### 模式二：混合模式（推荐用于团队协作）
+
+**适用场景：** 团队开发、环境一致性要求高
+
+**优点：**
+- 数据库和Redis使用Docker，环境一致
+- PHP和前端本地运行，开发速度快
+- 兼顾开发速度和环境一致性
+
+**步骤：**
+
+1. **启动数据库和Redis（Docker）**
+   ```bash
+   # 使用开发专用的docker-compose配置
+   docker-compose -f docker-compose.dev.yml up -d
+   
+   # 或只启动MySQL和Redis
+   docker-compose up -d mysql redis
+   ```
+
+2. **配置后端（本地运行）**
+   ```bash
+   cd backend
+   composer install
+   cp .env.example .env
+   
+   # 编辑 .env，使用Docker中的数据库
+   # DB_HOST=127.0.0.1  # Docker映射到本地3306端口
+   # DB_DATABASE=job_fair_signin_system
+   # DB_USERNAME=root
+   # DB_PASSWORD=root
+   # REDIS_HOST=127.0.0.1  # Docker映射到本地6379端口
+   
+   php artisan key:generate
+   php artisan migrate
+   php artisan serve
+   ```
+
+3. **配置前端（本地运行）**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+### 模式三：完全Docker模式
+
+**适用场景：** 生产环境模拟、CI/CD测试
+
+**步骤：**
+```bash
+# 启动所有服务
+docker-compose up -d
+
+# 初始化后端
+docker-compose exec php composer install
+docker-compose exec php php artisan key:generate
+docker-compose exec php php artisan migrate
+
+# 构建前端
+cd frontend
+npm install
+npm run build
+
+# 访问 http://localhost
+```
+
+## 环境变量配置
+
+### 本地开发环境 (.env)
+
+```env
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# 本地数据库
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=job_fair_signin_system
+DB_USERNAME=root
+DB_PASSWORD=你的本地MySQL密码
+
+# 本地Redis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+```
+
+### Docker环境 (.env)
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=http://your-domain.com
+
+# Docker数据库
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=job_fair_signin_system
+DB_USERNAME=root
+DB_PASSWORD=root
+
+# Docker Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+## 前端代理配置
+
+前端开发服务器已配置代理，将 `/api` 请求转发到后端：
+
+```javascript
+// frontend/vite.config.js
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8000',  // 本地开发
+      changeOrigin: true,
+    },
+  },
+}
+```
+
+## 常见问题
+
+### 1. 本地MySQL连接失败
+
+**检查：**
+- MySQL服务是否启动
+- 用户名密码是否正确
+- 数据库是否已创建
+
+```bash
+# 测试连接
+mysql -u root -p -h 127.0.0.1
+```
+
+### 2. 本地Redis连接失败
+
+**检查：**
+- Redis服务是否启动
+- 端口6379是否被占用
+
+```bash
+# 测试连接
+redis-cli ping
+# 应该返回 PONG
+```
+
+### 3. 前端无法连接后端API
+
+**检查：**
+- 后端服务是否运行在 http://localhost:8000
+- 检查浏览器控制台网络请求
+- 确认CORS配置正确
+
+### 4. PHP扩展缺失
+
+**安装必要扩展：**
+```bash
+# Ubuntu/Debian
+sudo apt install php8.1-mysql php8.1-redis php8.1-mbstring php8.1-xml php8.1-gd
+
+# Mac
+brew install php@8.1
+pecl install redis
+```
+
+## 部署到生产环境
+
+开发完成后，可以统一部署到云端服务器。**关键点：只需要修改 `.env` 文件，无需修改代码！**
+
+### 1. 准备生产环境
+
+```bash
+# 在服务器上克隆项目
+git clone <repository-url>
+cd job-fair-signin-system
+
+# 配置生产环境变量
+cd backend
+cp .env.production.example .env
+# 编辑 .env，设置生产环境配置
+```
+
+### 2. 修改环境配置
+
+编辑 `backend/.env`，主要修改以下配置：
+
+```env
+# 应用环境
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# 数据库（根据部署方式选择）
+# Docker方式：
+DB_HOST=mysql
+DB_PASSWORD=your_secure_password
+
+# 或云数据库方式：
+# DB_HOST=your-db-host.com
+# DB_USERNAME=your_db_user
+# DB_PASSWORD=your_db_password
+
+# Redis（根据部署方式选择）
+# Docker方式：
+REDIS_HOST=redis
+
+# 或云Redis方式：
+# REDIS_HOST=your-redis-host.com
+# REDIS_PASSWORD=your_redis_password
+```
+
+> 📖 **详细说明**：查看 [ENVIRONMENT_CONFIG.md](./ENVIRONMENT_CONFIG.md) 了解完整的环境配置指南
+
+### 3. 使用Docker部署
+
+```bash
+# 构建并启动所有服务
+docker-compose up -d --build
+
+# 初始化
+docker-compose exec php composer install --no-dev --optimize-autoloader
+docker-compose exec php php artisan key:generate
+docker-compose exec php php artisan migrate --force
+
+# 优化性能
+docker-compose exec php php artisan config:cache
+docker-compose exec php php artisan route:cache
+docker-compose exec php php artisan view:cache
+
+# 构建前端
+cd frontend
+npm install
+npm run build
+```
+
+### 4. 配置Nginx（如果需要）
+
+生产环境可能需要配置域名和SSL证书，修改 `nginx/conf.d/default.conf`。
+
+### 5. 验证部署
+
+```bash
+# 测试数据库连接
+docker-compose exec php php artisan tinker
+>>> DB::connection()->getPdo();
+
+# 测试Redis连接
+>>> Redis::ping();
+```
+
+## 开发工作流建议
+
+1. **日常开发**：使用模式一（完全本地），开发速度快
+2. **功能测试**：使用模式二（混合模式），确保数据库环境一致
+3. **上线前测试**：使用模式三（完全Docker），模拟生产环境
+4. **生产部署**：使用Docker Compose统一部署
+

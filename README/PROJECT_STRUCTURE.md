@@ -1,0 +1,202 @@
+# 项目结构说明
+
+## 完整目录结构
+
+```
+job-fair-signin-system/
+├── frontend/                          # 前端项目
+│   ├── src/
+│   │   ├── api/                      # API接口封装
+│   │   │   ├── queue.js             # 排队相关API
+│   │   │   └── request.js            # Axios请求封装
+│   │   ├── i18n/                     # 国际化配置
+│   │   │   ├── index.js             # i18n初始化
+│   │   │   └── locales/             # 语言包
+│   │   │       ├── zh-CN.json      # 中文
+│   │   │       └── en-US.json      # 英文
+│   │   ├── router/                   # 路由配置
+│   │   │   └── index.js
+│   │   ├── stores/                   # Pinia状态管理
+│   │   │   ├── device.js            # 设备检测
+│   │   │   └── queue.js             # 排队状态
+│   │   ├── views/                    # 页面组件
+│   │   │   ├── Home.vue             # 首页
+│   │   │   ├── SignIn.vue           # 签到页面
+│   │   │   ├── Queue.vue            # 排队查询页面
+│   │   │   └── Admin.vue            # 管理后台（待开发）
+│   │   ├── App.vue                   # 根组件
+│   │   ├── main.js                   # 入口文件
+│   │   ├── style.css                 # 全局样式
+│   │   └── vite-env.d.ts            # TypeScript类型定义
+│   ├── index.html                    # HTML模板
+│   ├── package.json                  # 依赖配置
+│   ├── vite.config.js                # Vite配置
+│   ├── tailwind.config.js            # Tailwind配置
+│   ├── postcss.config.js             # PostCSS配置
+│   ├── .eslintrc.cjs                 # ESLint配置
+│   └── .gitignore
+│
+├── backend/                           # 后端项目（Laravel 10）
+│   ├── app/
+│   │   ├── Console/                  # 命令行
+│   │   │   ├── Commands/
+│   │   │   └── Kernel.php
+│   │   ├── Exceptions/               # 异常处理
+│   │   │   └── Handler.php
+│   │   ├── Http/
+│   │   │   ├── Controllers/
+│   │   │   │   └── Api/
+│   │   │   │       └── QueueController.php  # 排队控制器
+│   │   │   ├── Middleware/           # 中间件
+│   │   │   │   ├── Authenticate.php
+│   │   │   │   ├── EncryptCookies.php
+│   │   │   │   ├── PreventRequestsDuringMaintenance.php
+│   │   │   │   ├── RedirectIfAuthenticated.php
+│   │   │   │   ├── TrimStrings.php
+│   │   │   │   ├── TrustProxies.php
+│   │   │   │   ├── ValidateSignature.php
+│   │   │   │   └── VerifyCsrfToken.php
+│   │   │   ├── Requests/             # 表单验证
+│   │   │   │   └── QueueRequest.php
+│   │   │   └── Kernel.php           # HTTP内核
+│   │   ├── Models/                   # 数据模型
+│   │   │   ├── Queue.php            # 排队模型
+│   │   │   ├── SignIn.php           # 签到模型
+│   │   │   └── User.php             # 用户模型
+│   │   ├── Providers/               # 服务提供者
+│   │   │   ├── AppServiceProvider.php
+│   │   │   └── RouteServiceProvider.php
+│   │   └── Services/                 # 业务逻辑服务
+│   │       └── QueueService.php     # 排队服务
+│   ├── bootstrap/                    # 启动文件
+│   │   ├── app.php
+│   │   ├── cache/
+│   │   └── providers.php
+│   ├── config/                       # 配置文件
+│   │   ├── app.php
+│   │   ├── auth.php
+│   │   ├── broadcasting.php
+│   │   ├── cache.php
+│   │   ├── cors.php
+│   │   ├── database.php
+│   │   ├── filesystems.php
+│   │   ├── hashing.php
+│   │   ├── logging.php
+│   │   ├── mail.php
+│   │   ├── queue.php
+│   │   ├── rateLimiter.php
+│   │   ├── sanctum.php
+│   │   ├── services.php
+│   │   ├── session.php
+│   │   └── view.php
+│   ├── database/
+│   │   ├── factories/
+│   │   ├── migrations/               # 数据库迁移
+│   │   │   ├── 2024_01_01_000001_create_sign_ins_table.php
+│   │   │   └── 2024_01_01_000002_create_queues_table.php
+│   │   └── seeders/
+│   │       └── DatabaseSeeder.php
+│   ├── public/                       # 公共目录
+│   │   ├── index.php
+│   │   └── .htaccess
+│   ├── resources/
+│   │   ├── lang/
+│   │   └── views/
+│   ├── routes/                       # 路由定义
+│   │   ├── api.php                  # API路由
+│   │   ├── console.php              # 控制台路由
+│   │   └── web.php                  # Web路由
+│   ├── storage/                      # 存储目录
+│   │   ├── app/
+│   │   ├── framework/
+│   │   │   ├── cache/
+│   │   │   ├── sessions/
+│   │   │   └── views/
+│   │   └── logs/
+│   ├── tests/                        # 测试文件
+│   │   ├── Feature/
+│   │   ├── Unit/
+│   │   └── TestCase.php
+│   ├── artisan                       # Laravel命令行工具
+│   ├── composer.json                 # PHP依赖配置
+│   ├── Dockerfile                    # Docker镜像配置
+│   ├── phpunit.xml                   # PHPUnit配置
+│   ├── .env.example                  # 环境变量示例
+│   └── .gitignore
+│
+├── nginx/                            # Nginx配置
+│   ├── nginx.conf                    # 主配置文件
+│   └── conf.d/
+│       └── default.conf              # 站点配置
+│
+├── docker-compose.yml                # Docker编排文件
+├── Makefile                          # 便捷命令
+├── start.sh                          # Linux/Mac启动脚本
+├── start.bat                         # Windows启动脚本
+├── README.md                         # 项目说明文档
+├── PROJECT_STRUCTURE.md              # 项目结构说明（本文件）
+├── .gitignore                        # Git忽略配置
+└── .dockerignore                     # Docker忽略配置
+```
+
+## 核心功能模块
+
+### 前端模块
+
+1. **路由系统** (`frontend/src/router/`)
+   - 首页路由
+   - 签到路由
+   - 排队查询路由
+   - 管理后台路由
+
+2. **状态管理** (`frontend/src/stores/`)
+   - `device.js`: 设备类型检测（移动端/PC端）
+   - `queue.js`: 排队状态管理
+
+3. **API封装** (`frontend/src/api/`)
+   - `request.js`: Axios请求拦截器配置
+   - `queue.js`: 排队相关API接口
+
+4. **页面组件** (`frontend/src/views/`)
+   - `Home.vue`: 首页，提供签到和查询入口
+   - `SignIn.vue`: 签到页面，根据设备类型使用不同UI框架
+   - `Queue.vue`: 排队查询页面，显示排队号和状态
+   - `Admin.vue`: 管理后台（待开发）
+
+### 后端模块
+
+1. **控制器** (`backend/app/Http/Controllers/Api/`)
+   - `QueueController.php`: 处理排队相关请求
+
+2. **服务层** (`backend/app/Services/`)
+   - `QueueService.php`: 排队业务逻辑
+     - 生成排队号
+     - 查询排队状态
+     - 计算等待时间
+     - Redis队列管理
+
+3. **数据模型** (`backend/app/Models/`)
+   - `SignIn.php`: 签到记录模型
+   - `Queue.php`: 排队记录模型
+
+4. **数据库迁移** (`backend/database/migrations/`)
+   - `create_sign_ins_table.php`: 签到表
+   - `create_queues_table.php`: 排队表
+
+## 技术特点
+
+1. **双端适配**: 自动检测设备类型，移动端使用Vant UI，PC端使用Element Plus
+2. **国际化支持**: 使用vue-i18n实现中英文切换
+3. **状态管理**: 使用Pinia进行状态管理
+4. **API设计**: RESTful API设计，统一使用/api前缀
+5. **队列管理**: 使用Redis实现高效的排队队列管理
+6. **容器化部署**: 完整的Docker配置，一键启动所有服务
+
+## 开发建议
+
+1. **前端开发**: 在`frontend`目录下进行，使用`npm run dev`启动开发服务器
+2. **后端开发**: 在`backend`目录下进行，确保Docker服务已启动
+3. **数据库操作**: 使用Laravel迁移文件管理数据库结构
+4. **API测试**: 可以使用Postman或curl测试API接口
+5. **代码规范**: 遵循项目中的ESLint和PSR-12规范
+

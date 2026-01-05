@@ -1,0 +1,27 @@
+{
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error"
+  },
+  "signin": {
+    "title": "Job Fair Sign In",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "company": "Company",
+    "position": "Position",
+    "submit": "Submit Sign In"
+  },
+  "queue": {
+    "title": "Queue Number",
+    "yourNumber": "Your Number",
+    "position": "Current Position",
+    "estimatedWait": "Estimated Wait Time",
+    "checkStatus": "Check Status"
+  }
+}
+

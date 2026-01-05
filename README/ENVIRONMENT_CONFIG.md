@@ -1,0 +1,282 @@
+# 环境配置指南
+
+## 概述
+
+本项目使用 Laravel 的环境变量（`.env` 文件）来管理不同环境的配置。**你只需要修改 `.env` 文件中的配置，无需修改代码**，就可以在不同环境间切换。
+
+## 核心原理
+
+Laravel 通过 `env()` 函数读取 `.env` 文件中的配置，所有数据库、Redis、缓存等连接信息都通过环境变量配置。这意味着：
+
+✅ **开发时**：在 `.env` 中配置本地 MySQL 和 Redis  
+✅ **部署时**：在 `.env` 中配置 Docker 或云服务的 MySQL 和 Redis  
+✅ **无需修改代码**：只需要修改 `.env` 文件即可
+
+## 三种环境配置
+
+### 1. 本地开发环境（完全本地）
+
+**适用场景：** 日常开发，MySQL 和 Redis 都在本地运行
+
+**配置示例：**
+```env
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# 本地MySQL
+DB_HOST=127.0.0.1
+DB_DATABASE=job_fair_signin_system
+DB_USERNAME=root
+DB_PASSWORD=你的本地MySQL密码
+
+# 本地Redis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+```
+
+**优点：**
+- 开发速度快
+- 调试方便
+- 不需要 Docker
+
+---
+
+### 2. 混合开发环境（本地PHP + Docker数据库）
+
+**适用场景：** 团队协作，确保数据库环境一致
+
+**配置示例：**
+```env
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Docker中的MySQL（通过端口映射）
+DB_HOST=127.0.0.1
+DB_DATABASE=job_fair_signin_system
+DB_USERNAME=root
+DB_PASSWORD=root
+
+# Docker中的Redis（通过端口映射）
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+```
+
+**启动方式：**
+```bash
+# 只启动MySQL和Redis
+docker-compose -f docker-compose.dev.yml up -d
+# 或
+docker-compose up -d mysql redis
+```
+
+**优点：**
+- 数据库环境一致
+- PHP 本地运行，开发速度快
+
+---
+
+### 3. 生产环境（Docker 或云服务）
+
+**适用场景：** 生产部署
+
+#### 选项A：使用 Docker Compose（推荐）
+
+**配置示例：**
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# Docker容器中的MySQL
+DB_HOST=mysql
+DB_DATABASE=job_fair_signin_system
+DB_USERNAME=root
+DB_PASSWORD=your_secure_password
+
+# Docker容器中的Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+**说明：** 在 Docker Compose 中，服务名（`mysql`、`redis`）就是主机名。
+
+#### 选项B：使用云数据库服务
+
+**配置示例：**
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# 云数据库（如阿里云RDS、AWS RDS等）
+DB_HOST=your-db-host.rds.amazonaws.com
+DB_DATABASE=job_fair_signin_system
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_secure_password
+DB_PORT=3306
+
+# 云Redis（如阿里云Redis、AWS ElastiCache等）
+REDIS_HOST=your-redis-host.cache.amazonaws.com
+REDIS_PASSWORD=your_redis_password
+REDIS_PORT=6379
+```
+
+---
+
+## 环境切换步骤
+
+### 从本地开发切换到生产部署
+
+**步骤1：** 复制生产环境配置模板
+```bash
+cd backend
+cp .env.production.example .env
+```
+
+**步骤2：** 编辑 `.env` 文件，修改以下关键配置：
+
+```env
+# 1. 修改应用环境
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# 2. 修改数据库连接（根据你的部署方式选择）
+
+# 方式A：Docker环境
+DB_HOST=mysql
+DB_PASSWORD=your_secure_password
+
+# 方式B：云数据库
+DB_HOST=your-db-host.com
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+
+# 3. 修改Redis连接（根据你的部署方式选择）
+
+# 方式A：Docker环境
+REDIS_HOST=redis
+
+# 方式B：云Redis
+REDIS_HOST=your-redis-host.com
+REDIS_PASSWORD=your_redis_password
+
+# 4. 生成新的应用密钥（重要！）
+# 运行：php artisan key:generate
+```
+
+**步骤3：** 运行迁移和优化
+```bash
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### 从生产环境切换回本地开发
+
+**步骤1：** 恢复本地配置
+```bash
+cd backend
+cp .env.example .env
+# 或手动编辑 .env，修改为本地配置
+```
+
+**步骤2：** 修改关键配置
+```env
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_HOST=127.0.0.1
+DB_PASSWORD=你的本地MySQL密码
+
+REDIS_HOST=127.0.0.1
+```
+
+**步骤3：** 清除缓存
+```bash
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+---
+
+## 配置检查清单
+
+部署前请检查以下配置：
+
+### 必需配置
+- [ ] `APP_KEY` 已生成（运行 `php artisan key:generate`）
+- [ ] `APP_ENV` 设置为 `production`
+- [ ] `APP_DEBUG` 设置为 `false`
+- [ ] `APP_URL` 设置为实际域名
+- [ ] 数据库连接信息正确
+- [ ] Redis 连接信息正确
+
+### 安全配置
+- [ ] 数据库密码足够强
+- [ ] Redis 密码已设置（如果使用云服务）
+- [ ] 敏感信息不在代码中硬编码
+
+### 性能配置
+- [ ] 已运行 `php artisan config:cache`
+- [ ] 已运行 `php artisan route:cache`
+- [ ] 已运行 `php artisan view:cache`
+
+---
+
+## 常见问题
+
+### Q1: 本地开发时，需要修改代码吗？
+
+**A:** 不需要！只需要修改 `.env` 文件中的 `DB_HOST` 和 `REDIS_HOST` 即可。
+
+### Q2: 部署到生产环境时，需要修改代码吗？
+
+**A:** 不需要！只需要：
+1. 复制 `.env.production.example` 为 `.env`
+2. 修改 `.env` 中的配置
+3. 运行 `php artisan config:cache` 使配置生效
+
+### Q3: 如何验证配置是否正确？
+
+**A:** 运行以下命令测试连接：
+```bash
+# 测试数据库连接
+php artisan tinker
+>>> DB::connection()->getPdo();
+
+# 测试Redis连接
+>>> Redis::ping();
+```
+
+### Q4: 可以使用不同的数据库服务吗？
+
+**A:** 可以！只需要修改 `.env` 中的数据库配置：
+- 本地 MySQL
+- Docker MySQL
+- 云数据库（阿里云RDS、AWS RDS等）
+- 其他 MySQL 兼容数据库
+
+### Q5: 配置修改后不生效？
+
+**A:** 清除缓存：
+```bash
+php artisan config:clear
+php artisan cache:clear
+```
+
+---
+
+## 配置文件位置
+
+- **开发环境模板**: `backend/.env.example`
+- **生产环境模板**: `backend/.env.production.example`
+- **实际配置文件**: `backend/.env`（不要提交到Git）
+
+> ⚠️ **重要提示**：`.env` 文件包含敏感信息，已在 `.gitignore` 中排除，不要提交到版本控制系统。
+
