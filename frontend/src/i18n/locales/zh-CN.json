@@ -9,12 +9,15 @@
   },
   "signin": {
     "title": "招聘会签到",
+    "subtitle": "请填写以下信息完成签到",
     "name": "姓名",
     "phone": "手机号",
     "email": "邮箱",
     "company": "公司名称",
-    "position": "职位",
-    "submit": "提交签到"
+    "position": "求职意向",
+    "submit": "提交签到",
+    "switchLanguage": "切换语言",
+    "language": "语言"
   },
   "queue": {
     "title": "排队取号",

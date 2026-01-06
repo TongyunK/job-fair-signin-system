@@ -1,0 +1,42 @@
+{
+  "common": {
+    "submit": "提交",
+    "cancel": "取消",
+    "confirm": "確認",
+    "loading": "載入中...",
+    "success": "成功",
+    "error": "錯誤"
+  },
+  "signin": {
+    "title": "招聘會簽到",
+    "subtitle": "請填寫以下資料完成簽到",
+    "name": "姓名",
+    "phone": "手機號碼",
+    "email": "電郵",
+    "company": "公司名稱",
+    "position": "求職意向",
+    "submit": "提交簽到",
+    "submitting": "提交中...",
+    "switchLanguage": "切換語言",
+    "language": "語言",
+    "namePlaceholder": "請輸入姓名",
+    "phonePlaceholder": "請輸入手機號碼",
+    "emailPlaceholder": "請輸入電郵（選填）",
+    "positionPlaceholder": "例如：軟件工程師、產品經理等（選填）",
+    "nameRequired": "請輸入姓名",
+    "phoneRequired": "請輸入手機號碼",
+    "phoneValid": "請輸入正確的手機號碼",
+    "emailValid": "請輸入正確的電郵",
+    "success": "簽到成功！",
+    "error": "簽到失敗，請重試",
+    "footerText": "您的資料將被安全保存，僅用於招聘會簽到"
+  },
+  "queue": {
+    "title": "排隊取號",
+    "yourNumber": "您的號碼",
+    "position": "當前排隊位置",
+    "estimatedWait": "預計等待時間",
+    "checkStatus": "查詢狀態"
+  }
+}
+
